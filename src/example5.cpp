@@ -7,34 +7,32 @@ class TreeControlPanel: public Widget
 public:
 
     TreeControlPanel(Widget* parent)
-        :Widget(parent)
-    {
+        :Widget(parent) {
 
         setLayout(new GroupLayout());
 
         new Label(this, "Global Control", "sans-bold", 20);
 
         AddOpenCloseAll();
-        
+
         new Label(this, "Tree Layout Parameters", "sans-bold", 20);
 
         AddTreeIndentSliders();
-       
+
         AddDrawConnections();
 
         AddConnectionColorControl();
 
         new Label(this, "Button Parameters", "sans-bold", 20);
         AddButtonFontColorControl();
-        
+
         AddButtonSizeSliders();
     }
-
+    
 private: 
 
     void
-    AddOpenCloseAll()
-    {
+    AddOpenCloseAll(){
         const auto b = new Button(this, "Open/Close all TreeNodes");
         b->setFontSize(18);
         b->setFlags(Button::ToggleButton);
@@ -44,9 +42,9 @@ private:
                 OpenCloseAll(window(), v);
             });
     }
+    
     void
-    OpenCloseAll(Widget * w, bool v)
-    {
+    OpenCloseAll(Widget * w, bool v) {
         if(!w) return;
         
         const auto t = dynamic_cast<TreeNode*>(w);
@@ -63,13 +61,12 @@ private:
     }
 
     void
-    AddTreeIndentSliders()
-    {
+    AddTreeIndentSliders(){
         const auto grid = new Widget(this);
 
         grid->setLayout(new GridLayout(Orientation::Horizontal,
                                        3,
-                                       Alignment::Middle,
+                                       Alignment::Maximum,
                                        0,
                                        15));
 
@@ -101,6 +98,12 @@ private:
                 mSubItemSpacing = v;
                 AdjustTree(window());
             });
+
+        AddSlider(grid, "connectionWidth", mConnectionWidth, 3.0, [this](double v)
+            {
+                mConnectionWidth = v;
+                AdjustTree(window());
+            });
     }
 
     void
@@ -108,12 +111,11 @@ private:
               std::string          label,
               int                  value,
               int               maxValue,
-              std::function<void(int)> f)
-    {
+              std::function<void(int)> f){
         new Label(parent, label);
 
         Slider *slider = new Slider(parent);
-        slider->setValue(value/maxValue);
+        slider->setValue((double)value/maxValue);
         slider->setFixedWidth(80);
 
         TextBox *textBox = new TextBox(parent);
@@ -130,48 +132,74 @@ private:
     }
 
     void
-    AddDrawConnections()
-    {
+    AddSlider(Widget*             parent,
+              std::string          label,
+              double               value,
+              double            maxValue,
+              std::function<void(double)> f){
+        new Label(parent, label);
+
+        Slider *slider = new Slider(parent);
+        slider->setValue(value/maxValue);
+        slider->setFixedWidth(80);
+
+        TextBox *textBox = new TextBox(parent);
+        textBox->setFixedSize(Vector2i(60, 25));
+        textBox->setValue(std::to_string(value));
+        textBox->setFontSize(20);
+        textBox->setAlignment(TextBox::Alignment::Right);
+        
+        slider->setCallback(
+            [f, textBox, maxValue](float value) {
+                auto r = (int)(value * maxValue * 100);
+                
+                
+                textBox->setValue(std::to_string(r));
+                f((value * maxValue));
+            });
+    }
+
+    void
+    AddDrawConnections(){
         const auto b = new Button(this, "Draw Connections");
         b->setFontSize(18);
         b->setFlags(Button::ToggleButton);
         b->setPushed(true);
         b->setChangeCallback(
-            [this](bool v)
-            {
+            [this](bool v){
                 mDrawConnections = v;
                 AdjustTree(window());
-                
             });
     }
 
     void
-    AddConnectionColorControl()
-    {
-        const auto connectionColor = new PopupButton(this, "Connection Color", 0);
+    AddConnectionColorControl(){
+        const auto connectionColor
+            = new PopupButton(this, "Connection Color", 0);
         connectionColor->setFontSize(18);
-        AddColorSelector(connectionColor,[this](const Color& v)
-                         {
-                             mConnectionColor = v;
-                             AdjustTree(window());
-                         });
+        AddColorSelector(
+            connectionColor,
+            [this](const Color& v){
+                mConnectionColor = v;
+                AdjustTree(window());
+            });
     }
 
     void
-    AddButtonFontColorControl()
-    {
-        const auto connectionColor = new PopupButton(this, "Button Font Color", 0);
+    AddButtonFontColorControl(){
+        const auto connectionColor
+            = new PopupButton(this, "Button Font Color", 0);
         connectionColor->setFontSize(18);
-        AddColorSelector(connectionColor,[this](const Color& v)
-                         {
-                             mButtonFontColor = v;
-                             AdjustTree(window());
-                         });
+        AddColorSelector(
+            connectionColor,
+            [this](const Color& v){
+                mButtonFontColor = v;
+                AdjustTree(window());
+            });
     }
 
     void
-    AddColorSelector(PopupButton* b,std::function<void(const Color& v)> f)
-    {
+    AddColorSelector(PopupButton* b,std::function<void(const Color& v)> f){
         const auto popup = b->popup();
 
         popup->setLayout(new GroupLayout());
@@ -183,13 +211,12 @@ private:
     }
         
     void
-    AddButtonSizeSliders()
-    {
+    AddButtonSizeSliders(){
         const auto grid = new Widget(this);
 
         grid->setLayout(new GridLayout(Orientation::Horizontal,
                                        3,
-                                       Alignment::Middle,
+                                       Alignment::Maximum,
                                        0,
                                        15));
 
@@ -203,12 +230,11 @@ private:
                 mButtonFontSize = v;
                 AdjustTree(window());
             });
+        new Widget(grid);
     }
-    
-    
+
     void
-    AdjustTree(Widget * w)
-    {
+    AdjustTree(Widget * w) {
         if(!w) return;
 
         const auto t = dynamic_cast<TreeNode*>(w);
@@ -221,13 +247,14 @@ private:
             t->button()->setFontSize(mButtonFontSize);
             t->button()->setFixedSize(Vector2i(mButtonSize,
                                                mButtonSize));
-            
+
             t->setDrawConnections(mDrawConnections);
             t->setTreeIndent(mTreeIndent);
             t->setDisplayIndent(mDisplayIndent);
             t->setSubItemIndent(mSubItemIndent);
             t->setControlSpacing(mControlSpacing);
             t->setSubItemSpacing(mSubItemSpacing);
+            t->setConnectionWidth(mConnectionWidth);
         }
 
         for( const auto c: w->children())
@@ -237,16 +264,17 @@ private:
     }
     
 
-    Color mButtonFontColor = Color(255, 255, 255, 255);
-    Color mConnectionColor = Color(255, 255, 255, 255);
-    int mButtonSize     =  20;
-    int mButtonFontSize =  14;
-    int mTreeIndent     =  8;
-    int mDisplayIndent  =  8;
-    int mSubItemIndent  = 16;
-    int mControlSpacing =  8;
-    int mSubItemSpacing =  4;
-    bool mDrawConnections = true;
+    Color mButtonFontColor  = Color(255, 255, 255, 255);
+    Color mConnectionColor  = Color(255, 255, 255, 255);
+    int mButtonSize         =  20;
+    int mButtonFontSize     =  14;
+    int mTreeIndent         =  8;
+    int mDisplayIndent      =  8;
+    int mSubItemIndent      = 16;
+    int mControlSpacing     =  8;
+    int mSubItemSpacing     =  4;
+    double mConnectionWidth =  1.0;
+    bool mDrawConnections   = true;
     
 };
 
@@ -268,8 +296,6 @@ main(int, char **)
 
 
         new TreeControlPanel(window);
-        
-
 
         Widget *tree = new Widget(window);
         tree->setLayout(new GroupLayout());
@@ -279,29 +305,28 @@ main(int, char **)
 
         auto n1 = new TreeNode(tree);
         n1->setDisplay<Label>("node 1", "sans-bold", 72);
-
-        new Label(n1, "node 1 1", "sans", 12);
-        new Label(n1, "node 1 2", "sans", 14);
-        new Label(n1, "node 1 3", "sans", 16);
+        n1->addSubItem(new Label(n1, "node 1 1", "sans", 12));
+        n1->addSubItem(new Label(n1, "node 1 2", "sans", 14));
+        n1->addSubItem(new Label(n1, "node 1 3", "sans", 16));
 
         auto n2 = new TreeNode(n1);
         n2->setDisplay<Label>("node 2","sans-bold", 30);
 
-        new Label(n2, "node 2 1", "sans", 12);
-        new Label(n2, "node 2 2", "sans", 14);
-        new Label(n2, "node 2 3", "sans", 16);
-        new Label(n2, "node 2 4", "sans", 18);
+        n2->addSubItem(new Label(n2, "node 2 1", "sans", 12));
+        n2->addSubItem(new Label(n2, "node 2 2", "sans", 14));
+        n2->addSubItem(new Label(n2, "node 2 3", "sans", 16));
+        n2->addSubItem(new Label(n2, "node 2 4", "sans", 18));
 
         auto n3 = new TreeNode(n2);
         n3->setDisplay<Label>("node 3","sans-bold", 10);
 
-        new Label(n3, "node 3 1", "sans", 12);
-        new Label(n3, "node 3 2", "sans", 14);
-        new Label(n3, "node 3 3", "sans", 10);
-        new Label(n3, "node 3 4", "sans", 16);
-        new Label(n3, "node 3 5", "sans", 18);
+        n3->addSubItem(new Label(n3, "node 3 1", "sans", 12));
+        n3->addSubItem(new Label(n3, "node 3 2", "sans", 14));
+        n3->addSubItem(new Label(n3, "node 3 3", "sans", 10));
+        n3->addSubItem(new Label(n3, "node 3 4", "sans", 16));
+        n3->addSubItem(new Label(n3, "node 3 5", "sans", 18));
 
-        new Label(n1, "node 1 4", "sans", 18);
+        n1->addSubItem(new Label(n1, "node 1 4", "sans", 18));
         
         screen->setVisible(true);
         screen->performLayout();
