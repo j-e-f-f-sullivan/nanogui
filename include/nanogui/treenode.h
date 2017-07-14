@@ -41,13 +41,14 @@ namespace nanogui
     class NANOGUI_EXPORT TreeNode: public Widget
     {
     public:
-        TreeNode(Widget*       parent,
-                 int       treeIndent =  8,
-                 int    displayIndent =  8,
-                 int    subItemIndent = 16,
-                 int   controlSpacing =  8,
-                 int   subItemSpacing =  4,
-                 bool drawConnections = true);
+        TreeNode(Widget*         parent,
+                 int         treeIndent =  8,
+                 int      displayIndent =  8,
+                 int      subItemIndent = 16,
+                 int     controlSpacing =  8,
+                 int     subItemSpacing =  4,
+                 double connectionWidth =  1.0,
+                 bool   drawConnections = true);
 
 
         template<typename WidgetClass, typename... Args>
@@ -69,6 +70,8 @@ namespace nanogui
             
             reparentWidget(b, 0);
             recalculateLayout();
+
+            return b;
         }
         
 
@@ -85,6 +88,7 @@ namespace nanogui
             const auto d =  new WidgetClass(nullptr, args...);
             reparentWidget(d, 1);
             recalculateLayout();
+            return d;
         }
         
         const Widget* display() const {
@@ -107,17 +111,17 @@ namespace nanogui
             return childCount()-2;
         }
 
-        void AddSubItem(Widget* w){
+        void addSubItem(Widget* w){
             addChild(w);
             recalculateLayout();
         }
 
-        void AddSubItem(int i, Widget* w) {
+        void addSubItem(int i, Widget* w) {
             addChild(i+2, w);
             recalculateLayout();
         }
 
-        void RemoveSubItem(Widget* w){
+        void removeSubItem(Widget* w){
             const auto rp = std::remove(mChildren.begin()+2,
                                         mChildren.end(), w);
             if(rp != children().end())
@@ -128,7 +132,7 @@ namespace nanogui
             }
         }
 
-        void RemoveSubItem(int i) {
+        void removeSubItem(int i) {
             const auto widget = mChildren[i];
             mChildren.erase(mChildren.begin() + i + 2);
             widget->decRef();
@@ -149,6 +153,12 @@ namespace nanogui
 
         int subItemSpacing() const { return mSubItemSpacing;}
         void setSubItemSpacing(int subItemSpacing);
+
+        double connectionWidth() const { return mConnectionWidth;}
+        void setConnectionWidth(double connectionWidth)
+        {
+            mConnectionWidth = connectionWidth;
+        }
 
         int drawConnections() const { return mDrawConnections;}
         void setDrawConnections(bool drawConnections)
@@ -173,18 +183,19 @@ namespace nanogui
             /// Layout the TreeNode, taking not of whether subItems are hidden
         void performLayout(NVGcontext *ctx) override;
 
+        void recalculateLayout();
     private:
 
         void reparentWidget(Widget* child, int index);
-        void recalculateLayout();
 
-        int  mTreeIndent;
-        int  mDisplayIndent;
-        int  mSubItemIndent;
-        int  mControlSpacing;
-        int  mSubItemSpacing;
-        bool mDrawConnections;
-        Color mConnectionColor = Color(255, 255, 255, 255);
+        int    mTreeIndent;
+        int    mDisplayIndent;
+        int    mSubItemIndent;
+        int    mControlSpacing;
+        int    mSubItemSpacing;
+        double mConnectionWidth;
+        bool   mDrawConnections;
+        Color  mConnectionColor = Color(255, 255, 255, 255);
 
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

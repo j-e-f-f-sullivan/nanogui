@@ -69,30 +69,40 @@ namespace
 
         return targetSize;
     }
-
 }
 
 
-TreeNode::TreeNode(Widget*       parent,
-                   int       treeIndent,
-                   int    displayIndent,
-                   int    subItemIndent,
-                   int   controlSpacing,
-                   int   subItemSpacing,
-                   bool drawConnections)
+TreeNode::TreeNode(Widget*         parent,
+                   int         treeIndent,
+                   int      displayIndent,
+                   int      subItemIndent,
+                   int     controlSpacing,
+                   int     subItemSpacing,
+                   double connectionWidth,
+                   bool   drawConnections)
     :Widget(parent),
      mTreeIndent(treeIndent),
      mDisplayIndent(displayIndent),
      mSubItemIndent(subItemIndent),
      mControlSpacing(controlSpacing),
      mSubItemSpacing(subItemSpacing),
+     mConnectionWidth(connectionWidth),
      mDrawConnections(drawConnections)
 {
         /* Make sure we have slots 0 and 1 available for button and
          * display by adding something innocuous.
          */
-    add<TreeButton>();
-    add<Label>("undefined");
+     const auto     b = new TreeButton(nullptr);
+     const auto oldCb = b->changeCallback();
+
+     b->setChangeCallback(
+         [oldCb, this](bool v){
+             setOpen(v);
+             oldCb(v);
+         });
+     addChild(b);
+     add<Label>("undefined");
+     recalculateLayout();
 }
 
 void
@@ -105,10 +115,7 @@ TreeNode::reparentWidget(Widget* child, int i)
 
     if(current == child) return;
 
-    if(current)
-    {
-        current->decRef();
-    }
+    if(current) current->decRef();
 
     mChildren[i] = child;
     child->incRef();
@@ -194,37 +201,33 @@ TreeNode::draw(NVGcontext *ctx)
     drawComponent(ctx,  childAt(0));
     drawComponent(ctx, childAt(1));
 
-    const auto          last = children().back();
-    const auto       lastPos = attachmentPoint(last);
 
     const auto          dPos = display()->position();
     const auto         dSize = display()->size();
     const auto      displayY = dPos.y() + dSize.y()/2;
-    
+
     const auto    buttonSize = button()->size();
     const auto decenderStart = Vector2i(dPos.x() - mDisplayIndent, displayY);
-    const auto  decenderStop = Vector2i(dPos.x() - mDisplayIndent, lastPos.y());
 
     const NVGcolor strokeColor = mConnectionColor;
-    
 
-    if(mDrawConnections)
-    {
-        nvgStrokeWidth(ctx, 1.0);
+    if(mDrawConnections){
+        nvgStrokeWidth(ctx, mConnectionWidth);
         nvgStrokeColor(ctx, strokeColor);
-        
+
         nvgBeginPath(ctx);
         nvgMoveTo(ctx, buttonSize.x(), decenderStart.y());
         nvgLineTo(ctx, dPos.x(),       decenderStart.y());
         nvgStroke(ctx);
     }
-    
-    if(open() && (subItemCount() > 0))
-    {
 
-        if(mDrawConnections)
-        {
-            nvgStrokeWidth(ctx, 1.0);
+    if(open() && (subItemCount() > 0)) {
+        const auto          last = children().back();
+        const auto       lastPos = attachmentPoint(last);
+        const auto  decenderStop = Vector2i(dPos.x() - mDisplayIndent, lastPos.y());
+
+        if(mDrawConnections) {
+            nvgStrokeWidth(ctx, mConnectionWidth);
             nvgStrokeColor(ctx, strokeColor);
 
             nvgBeginPath(ctx);
@@ -233,14 +236,12 @@ TreeNode::draw(NVGcontext *ctx)
             nvgStroke(ctx);
         }
 
-        for(auto i = 0; i < subItemCount(); ++i)
-        {
+        for(auto i = 0; i < subItemCount(); ++i) {
             const auto    item = subItemAt(i);
             const auto itemPos = attachmentPoint(item);
 
-            if(mDrawConnections)
-            {
-                nvgStrokeWidth(ctx, 1.0);
+            if(mDrawConnections) {
+                nvgStrokeWidth(ctx, mConnectionWidth);
                 nvgStrokeColor(ctx, strokeColor);
 
                 nvgBeginPath(ctx);
@@ -263,10 +264,7 @@ TreeNode::draw(NVGcontext *ctx)
 Vector2i
 TreeNode::preferredSize(NVGcontext *ctx) const
 {
-    if(!visible())
-    {
-        return Vector2i(0,0);
-    }
+    if(!visible()) return Vector2i(0,0);
 
     const auto  buttonSize = preferredComponentSize(ctx,  button());
     const auto displaySize = preferredComponentSize(ctx, display());
@@ -277,10 +275,8 @@ TreeNode::preferredSize(NVGcontext *ctx) const
                    + mTreeIndent
                    + mDisplayIndent);
 
-    if(open())
-    {
-        for(auto i = 0; i < subItemCount(); ++i)
-        {
+    if(open()){
+        for(auto i = 0; i < subItemCount(); ++i){
             const auto item = subItemAt(i);
 
             if(!item->visible()) continue;
@@ -335,10 +331,8 @@ TreeNode::performLayout(NVGcontext *ctx)
                                   midHeight - displaySize.y()/2));
     display->performLayout(ctx);
 
-    if(open())
-    {
-        for(auto i = 0; i < subItemCount(); ++i)
-        {
+    if(open()){
+        for(auto i = 0; i < subItemCount(); ++i){
             const auto c = subItemAt(i);
 
             if(!c->visible()) continue;
