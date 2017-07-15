@@ -97,7 +97,7 @@ TreeNode::TreeNode(Widget*         parent,
 
      b->setChangeCallback(
          [oldCb, this](bool v){
-             setOpen(v);
+             setExpanded(v);
              oldCb(v);
          });
      addChild(b);
@@ -110,7 +110,7 @@ TreeNode::reparentWidget(Widget* child, int i)
 {
     assert(child);
     assert(!child->parent());
-    
+
     auto current = mChildren[i];
 
     if(current == child) return;
@@ -119,51 +119,13 @@ TreeNode::reparentWidget(Widget* child, int i)
 
     mChildren[i] = child;
     child->incRef();
-    
+
     child->setParent(this);
     child->setTheme(theme());
-  
-
-}
-
-void
-TreeNode::setTreeIndent(int treeIndent)
-{
-    mTreeIndent = treeIndent;
-    recalculateLayout();
-}
-
-void
-TreeNode::setDisplayIndent(int displayIndent)
-{
-    mDisplayIndent = displayIndent;
-    recalculateLayout();
-}
-
-
-void
-TreeNode::setSubItemIndent(int subItemIndent)
-{
-    mSubItemIndent  = subItemIndent;
-    recalculateLayout();
-}
-
-void
-TreeNode::setControlSpacing(int controlSpacing)
-{
-    mControlSpacing  = controlSpacing;
-    recalculateLayout();
-}
-
-void
-TreeNode::setSubItemSpacing(int subItemSpacing)
-{
-    mSubItemSpacing  = subItemSpacing;
-    recalculateLayout();
 }
 
 bool
-TreeNode::open() const
+TreeNode::expanded() const
 {
     const auto b = button();
 
@@ -173,7 +135,7 @@ TreeNode::open() const
 }
 
 void
-TreeNode::setOpen(bool o)
+TreeNode::setExpanded(bool o)
 {
     const auto b = button();
     if(b)
@@ -182,6 +144,7 @@ TreeNode::setOpen(bool o)
         recalculateLayout();
     }
 }
+
 
 void
 TreeNode::recalculateLayout()
@@ -221,7 +184,7 @@ TreeNode::draw(NVGcontext *ctx)
         nvgStroke(ctx);
     }
 
-    if(open() && (subItemCount() > 0)) {
+    if(expanded() && (subItemCount() > 0)) {
         const auto          last = children().back();
         const auto       lastPos = attachmentPoint(last);
         const auto  decenderStop = Vector2i(dPos.x() - mDisplayIndent, lastPos.y());
@@ -275,7 +238,7 @@ TreeNode::preferredSize(NVGcontext *ctx) const
                    + mTreeIndent
                    + mDisplayIndent);
 
-    if(open()){
+    if(expanded()){
         for(auto i = 0; i < subItemCount(); ++i){
             const auto item = subItemAt(i);
 
@@ -331,7 +294,7 @@ TreeNode::performLayout(NVGcontext *ctx)
                                   midHeight - displaySize.y()/2));
     display->performLayout(ctx);
 
-    if(open()){
+    if(expanded()){
         for(auto i = 0; i < subItemCount(); ++i){
             const auto c = subItemAt(i);
 

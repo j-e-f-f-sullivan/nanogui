@@ -37,8 +37,7 @@ private:
         b->setFontSize(18);
         b->setFlags(Button::ToggleButton);
         b->setChangeCallback(
-            [this](bool v)
-            {
+            [this](bool v){
                 OpenCloseAll(window(), v);
             });
     }
@@ -49,13 +48,11 @@ private:
         
         const auto t = dynamic_cast<TreeNode*>(w);
         
-        if(t)
-        {
-            t->setOpen(v);
+        if(t){
+            t->setExpanded(v);
         }
 
-        for( const auto c: w->children())
-        {
+        for( const auto c: w->children()){
             OpenCloseAll(c,v);
         }
     }
@@ -70,13 +67,13 @@ private:
                                        0,
                                        15));
 
-        AddSlider(grid, "treeIndent", mTreeIndent, 20, [this](int v)
-            {
+        AddSlider(grid,"treeIndent",mTreeIndent, 20,
+                  [this](int v){
                 mTreeIndent = v;
                 AdjustTree(window());
             });
-        AddSlider(grid, "displayIndent", mDisplayIndent, 20, [this](int v)
-            {
+        
+        AddSlider(grid, "displayIndent", mDisplayIndent, 20, [this](int v){
                 mDisplayIndent = v;
                 AdjustTree(window());
             });
@@ -152,8 +149,6 @@ private:
         slider->setCallback(
             [f, textBox, maxValue](float value) {
                 auto r = (int)(value * maxValue * 100);
-                
-                
                 textBox->setValue(std::to_string(r));
                 f((value * maxValue));
             });
@@ -255,6 +250,7 @@ private:
             t->setControlSpacing(mControlSpacing);
             t->setSubItemSpacing(mSubItemSpacing);
             t->setConnectionWidth(mConnectionWidth);
+            t->recalculateLayout();
         }
 
         for( const auto c: w->children())
@@ -305,28 +301,28 @@ main(int, char **)
 
         auto n1 = new TreeNode(tree);
         n1->setDisplay<Label>("node 1", "sans-bold", 72);
-        n1->addSubItem(new Label(n1, "node 1 1", "sans", 12));
-        n1->addSubItem(new Label(n1, "node 1 2", "sans", 14));
-        n1->addSubItem(new Label(n1, "node 1 3", "sans", 16));
+        new Label(n1, "node 1 1", "sans", 12);
+        new Label(n1, "node 1 2", "sans", 14);
+        new Label(n1, "node 1 3", "sans", 16);
 
         auto n2 = new TreeNode(n1);
         n2->setDisplay<Label>("node 2","sans-bold", 30);
 
-        n2->addSubItem(new Label(n2, "node 2 1", "sans", 12));
-        n2->addSubItem(new Label(n2, "node 2 2", "sans", 14));
-        n2->addSubItem(new Label(n2, "node 2 3", "sans", 16));
-        n2->addSubItem(new Label(n2, "node 2 4", "sans", 18));
+        new Label(n2, "node 2 1", "sans", 12);
+        new Label(n2, "node 2 2", "sans", 14);
+        new Label(n2, "node 2 3", "sans", 16);
+        new Label(n2, "node 2 4", "sans", 18);
 
         auto n3 = new TreeNode(n2);
         n3->setDisplay<Label>("node 3","sans-bold", 10);
 
-        n3->addSubItem(new Label(n3, "node 3 1", "sans", 12));
-        n3->addSubItem(new Label(n3, "node 3 2", "sans", 14));
-        n3->addSubItem(new Label(n3, "node 3 3", "sans", 10));
-        n3->addSubItem(new Label(n3, "node 3 4", "sans", 16));
-        n3->addSubItem(new Label(n3, "node 3 5", "sans", 18));
+        new Label(n3, "node 3 1", "sans", 12);
+        new Label(n3, "node 3 2", "sans", 14);
+        new Label(n3, "node 3 3", "sans", 10);
+        new Label(n3, "node 3 4", "sans", 16);
+        new Label(n3, "node 3 5", "sans", 18);
 
-        n1->addSubItem(new Label(n1, "node 1 4", "sans", 18));
+        new Label(n1, "node 1 4", "sans", 18);
         
         screen->setVisible(true);
         screen->performLayout();
