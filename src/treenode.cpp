@@ -54,9 +54,8 @@ namespace
     inline Vector2i
     sizeComponent(NVGcontext *ctx, int availableWidth, Widget* w)
     {
-
         if(!w)  return Vector2i(0,0);
-        
+
         Vector2i ps = Vector2i(availableWidth,
                                w->preferredSize(ctx).y());
 
@@ -92,17 +91,9 @@ TreeNode::TreeNode(Widget*         parent,
         /* Make sure we have slots 0 and 1 available for button and
          * display by adding something innocuous.
          */
-     const auto     b = new TreeButton(nullptr);
-     const auto oldCb = b->changeCallback();
-
-     b->setChangeCallback(
-         [oldCb, this](bool v){
-             setExpanded(v);
-             oldCb(v);
-         });
-     addChild(b);
-     add<Label>("undefined");
-     recalculateLayout();
+    mChildren.assign(2, nullptr);
+    setButton<TreeButton>();
+    setDisplay<Label>("undefined");
 }
 
 void
@@ -271,7 +262,7 @@ TreeNode::performLayout(NVGcontext *ctx)
     const auto     display = childAt(1);
 
     if(!button || !display) return;
-    
+
     const auto availableWidth = width();
     const auto  buttonSize    = sizeComponent(ctx, availableWidth, button);
     const auto displaySize    = sizeComponent(ctx,
