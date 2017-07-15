@@ -53,27 +53,26 @@ namespace nanogui
 
         template<typename WidgetClass, typename... Args>
         WidgetClass* setButton(const Args&... args) {
-            
+
             static_assert(std::is_base_of<Button, WidgetClass>::value,
                           "nanogui::TreeNode::setButton() template parameter "
                           "must be derived from nanogui::Button.");
-            
+
             const auto     b =  new WidgetClass(nullptr, args...);
             const auto oldCb = b->changeCallback();
-    
+
             b->setChangeCallback(
                 [oldCb, this](bool v)
                 {
-                    setOpen(v);
+                    setExpanded(v);
                     oldCb(v);
                 });
-            
+
             reparentWidget(b, 0);
             recalculateLayout();
 
             return b;
         }
-        
 
         const Button* button() const{
             return dynamic_cast<const Button*>(childAt(0));
@@ -140,19 +139,30 @@ namespace nanogui
         }
 
         int treeIndent() const { return mTreeIndent;}
-        void setTreeIndent(int treeIndent);
+        void setTreeIndent(int treeIndent){
+            mTreeIndent = treeIndent;
+        }
 
         int displayIndent() const { return mDisplayIndent;}
-        void setDisplayIndent(int displayIndent);
+        void setDisplayIndent(int displayIndent){
+            mDisplayIndent = displayIndent;
+        }
 
         int subItemIndent() const { return mSubItemIndent;}
-        void setSubItemIndent(int subItemIndent);
+        void setSubItemIndent(int subItemIndent){
+            mSubItemIndent  = subItemIndent;
+        }
 
         int controlSpacing() const { return mControlSpacing;}
-        void setControlSpacing(int controlSpacing);
+        void setControlSpacing(int controlSpacing){
+            mControlSpacing  = controlSpacing;
+        }
 
         int subItemSpacing() const { return mSubItemSpacing;}
-        void setSubItemSpacing(int subItemSpacing);
+        void setSubItemSpacing(int subItemSpacing){
+            mSubItemSpacing  = subItemSpacing;
+        }
+
 
         double connectionWidth() const { return mConnectionWidth;}
         void setConnectionWidth(double connectionWidth)
@@ -170,9 +180,13 @@ namespace nanogui
         void setConnectionColor(const Color& v) {
             mConnectionColor = v;
         }
-        
-        bool open() const;
-        void setOpen(bool open);
+
+        bool expanded() const;
+        void setExpanded(bool state);
+
+        bool collapsed() const        {return !expanded();}
+        void setCollapsed(bool state) {setExpanded(!state);}
+
 
         void draw(NVGcontext *ctx)  override;
 
