@@ -26,17 +26,25 @@ namespace nanogui
          *
          * A TreeNodeLayout has the folowing layout parameters.
          *
-         *  \li displaySpacing - the gap between the button and the display.
+         *  \li     treeIndent - The indent between a button and the vertical
+         *                       connection line.
          *
-         *  \li  subItemIndent - The extra space, beyond the width of the
-         *                       button, to indent each sub-item of a treenode.
+         *  \li  displayIndent - The indent between the vertical construction
+         *                       line and the display.
          *
-         *  \li controlSpacing - The space between a control line and the
-         *                       children of the TreeNode.
+         *  \li  subItemIndent - The indent between the vertical construction
+         *                       line and each sub-item of a treenode.
+         *
+         *  \li controlSpacing - The space between the control line and the
+         *                       sub-items of the TreeNode.
          *
          *  \li subItemSpacing - the spacing between subsequent sub-items of a
          *                       TreeNode.
          *
+         *  \li connectionWidth - The width of the line to use for drawing
+         *                        connections.
+         *
+         *  \li drawConnections - whether to draw connections or not.
          */
     class NANOGUI_EXPORT TreeNode: public Widget
     {
@@ -89,7 +97,7 @@ namespace nanogui
             recalculateLayout();
             return d;
         }
-        
+
         const Widget* display() const {
             return childAt(1);
         }
