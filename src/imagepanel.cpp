@@ -17,14 +17,25 @@ NAMESPACE_BEGIN(nanogui)
 
 ImagePanel::ImagePanel(Widget *parent)
     : Widget(parent), mThumbSize(64), mSpacing(10), mMargin(10),
-      mMouseIndex(-1) {}
+    mMouseIndex(-1),
+    mFitWidth(true) {}
 
 Vector2i ImagePanel::gridSize() const {
-    int nCols = 1 + std::max(0,
-        (int) ((mSize.x() - 2 * mMargin - mThumbSize) /
-        (float) (mThumbSize + mSpacing)));
-    int nRows = ((int) mImages.size() + nCols - 1) / nCols;
-    return Vector2i(nCols, nRows);
+    if(mFitWidth){
+        int nCols = 1 + std::max(0,
+            (int) ((mSize.x() - 2 * mMargin - mThumbSize) /
+            (float) (mThumbSize + mSpacing)));
+        int nRows = ((int) mImages.size() + nCols - 1) / nCols;
+        return Vector2i(nCols, nRows);
+    }
+    else{
+        int nRows = 1 + std::max(0,
+            (int) ((mSize.y() - 2 * mMargin - mThumbSize) /
+            (float) (mThumbSize + mSpacing)));
+        int nCols = ((int) mImages.size() + nRows - 1) / nRows;
+        return Vector2i(nCols, nRows);
+    }
+    
 }
 
 int ImagePanel::indexForPosition(const Vector2i &p) const {

@@ -324,6 +324,7 @@ add_library(nanogui-obj OBJECT
   include/nanogui/imagepanel.h src/imagepanel.cpp
   include/nanogui/imageview.h src/imageview.cpp
   include/nanogui/vscrollpanel.h src/vscrollpanel.cpp
+  include/nanogui/hscrollpanel.h src/hscrollpanel.cpp
   include/nanogui/colorwheel.h src/colorwheel.cpp
   include/nanogui/colorpicker.h src/colorpicker.cpp
   include/nanogui/graph.h src/graph.cpp
@@ -401,11 +402,13 @@ if(NANOGUI_BUILD_EXAMPLE)
   add_executable(example3      src/example3.cpp)
   add_executable(example4      src/example4.cpp)
   add_executable(example_icons src/example_icons.cpp)
+  add_executable(example-hscroll src/example-hscroll.cpp)
   target_link_libraries(example1      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example2      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example3      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example4      nanogui ${NANOGUI_EXTRA_LIBS})
   target_link_libraries(example_icons nanogui ${NANOGUI_EXTRA_LIBS})
+  target_link_libraries(example-hscroll nanogui ${NANOGUI_EXTRA_LIBS})
 
   # Copy icons for example application
   file(COPY resources/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

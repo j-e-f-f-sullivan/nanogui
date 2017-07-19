@@ -31,6 +31,9 @@ public:
     void setImages(const Images &data) { mImages = data; }
     const Images& images() const { return mImages; }
 
+    bool fitWidth() const { return mFitWidth;}
+    void setFitWidth(bool f) { mFitWidth = f;}
+    
     std::function<void(int)> callback() const { return mCallback; }
     void setCallback(const std::function<void(int)> &callback) { mCallback = callback; }
 
@@ -48,6 +51,7 @@ protected:
     int mSpacing;
     int mMargin;
     int mMouseIndex;
+    bool mFitWidth;
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
