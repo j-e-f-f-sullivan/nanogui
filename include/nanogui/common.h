@@ -377,6 +377,7 @@ class GridLayout;
 class GroupLayout;
 class ImagePanel;
 class ImageView;
+class HScrollPanel;
 class Label;
 class Layout;
 class MessageDialog;

@@ -6,6 +6,7 @@ DECLARE_WIDGET(Label);
 DECLARE_WIDGET(Popup);
 DECLARE_WIDGET(MessageDialog);
 DECLARE_WIDGET(VScrollPanel);
+DECLARE_WIDGET(HScrollPanel);
 DECLARE_WIDGET(ComboBox);
 DECLARE_WIDGET(ProgressBar);
 DECLARE_WIDGET(Slider);
@@ -61,6 +62,9 @@ void register_basics(py::module &m) {
         .def(py::init<Widget *>(), py::arg("parent"), D(VScrollPanel, VScrollPanel))
         .def("scroll", &VScrollPanel::scroll, D(VScrollPanel, scroll))
         .def("setScroll", &VScrollPanel::setScroll, D(VScrollPanel, setScroll));
+    
+    py::class_<HScrollPanel, Widget, ref<HScrollPanel>, PyHScrollPanel>(m, "HScrollPanel", D(HScrollPanel))
+        .def(py::init<Widget *>(), py::arg("parent"), D(HScrollPanel, HScrollPanel));
 
     py::class_<ComboBox, Widget, ref<ComboBox>, PyComboBox>(m, "ComboBox", D(ComboBox))
         .def(py::init<Widget *>(), py::arg("parent"), D(ComboBox, ComboBox))

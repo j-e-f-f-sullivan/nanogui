@@ -3394,6 +3394,32 @@ static const char *__doc_nanogui_VScrollPanel_setScroll =
 R"doc(Set the scroll amount to a value between 0 and 1. 0 means scrolled to
 the top and 1 to the bottom.)doc";
 
+static const char *__doc_nanogui_HScrollPanel =
+R"doc(Adds a horizontal scrollbar around a widget that is too big to fit into
+a certain area.)doc";
+
+static const char *__doc_nanogui_HScrollPanel_HScrollPanel = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_draw = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_load = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_mChildPreferredHeight = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_mScroll = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_mUpdateLayout = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_mouseDragEvent = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_performLayout = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_preferredSize = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_save = R"doc()doc";
+
+static const char *__doc_nanogui_HScrollPanel_scrollEvent = R"doc()doc";
+
 static const char *__doc_nanogui_Widget =
 R"doc(Base class of all widgets.
 
