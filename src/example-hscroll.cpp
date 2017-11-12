@@ -144,12 +144,7 @@ public:
     ExampleApplication() : nanogui::Screen(Eigen::Vector2i(1024, 768), "NanoGUI Test") {
         using namespace nanogui;
 
-# if 0
 
-        Window* window = new Window(this, "Basic widgets");
-        window->setPosition(Vector2i(200, 15));
-        window->setLayout(new GroupLayout());
-#endif
 
 
         vector<pair<int, string>>
@@ -159,17 +154,8 @@ public:
         #else
             string resourcesFolderPath("./");
         #endif
-# if 0
-        new Label(window, "Image panel & scroll panel", "sans-bold");
-        PopupButton *imagePanelBtn = new PopupButton(window, "Image Panel");
-        imagePanelBtn->setIcon(ENTYPO_ICON_FOLDER);
-        Popup *popup = imagePanelBtn->popup();
-        VScrollPanel *vscroll = new VScrollPanel(popup);
-        ImagePanel *imgPanel = new ImagePanel(vscroll);
-        imgPanel->setImages(icons);
-        popup->setFixedSize(Vector2i(245, 150));
-#endif
-        
+
+
         auto imageWindow = new Window(this, "Selected image");
         imageWindow->setPosition(Vector2i(710, 15));
         imageWindow->setLayout(new GroupLayout());
@@ -184,7 +170,7 @@ public:
         // Set the first texture
         auto imageView = new ImageView(imageWindow, mImagesData[0].first.texture());
         mCurrentImage = 0;
-     
+
         imageView->setGridThreshold(20);
         imageView->setPixelInfoThreshold(20);
         imageView->setPixelInfoCallback(
@@ -206,7 +192,6 @@ public:
 
             // fix the width now, to force use of an h-scroll bar.
         imageWindow->setFixedWidth(imageWindow->preferredSize(mNVGContext).x());
-        
 
         {
             HScrollPanel *hscroll = new HScrollPanel(imageWindow);
@@ -220,7 +205,7 @@ public:
                 cout << "Selected item " << i << '\n';
                 });
         }
-        
+
         performLayout();
 
         /* All NanoGUI widgets are initialized at this point. Now
@@ -231,9 +216,8 @@ public:
            buffer object management.
         */
 
-        
     }
-    
+
     virtual bool keyboardEvent(int key, int scancode, int action, int modifiers) {
         if (Screen::keyboardEvent(key, scancode, action, modifiers))
             return true;

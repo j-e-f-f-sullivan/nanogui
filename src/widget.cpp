@@ -201,10 +201,10 @@ void Widget::requestFocus() {
         widget = widget->parent();
     ((Screen *) widget)->updateFocus(this);
 }
-
+#define NANOGUI_SHOW_WIDGET_BOUNDS 1
 void Widget::draw(NVGcontext *ctx) {
     #if NANOGUI_SHOW_WIDGET_BOUNDS
-        nvgStrokeWidth(ctx, 1.0f);
+        nvgStrokeWidth(ctx, 1.3f);
         nvgBeginPath(ctx);
         nvgRect(ctx, mPos.x() - 0.5f, mPos.y() - 0.5f, mSize.x() + 1, mSize.y() + 1);
         nvgStrokeColor(ctx, nvgRGBA(255, 0, 0, 255));
